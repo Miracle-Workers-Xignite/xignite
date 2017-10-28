@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.amazonaws.services.lambda.runtime.events.LexEvent;
 import com.amazonaws.services.lambda.runtime.events.LexEvent.CurrentIntent;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -134,8 +136,8 @@ public class GlobalNewsIntent extends IntentProcessor {
 		for(Headline e:er.getHeadlines()){
 			sb.append(e.getTitle()).append(" ");
 			ga = new GenericAttachment();
-			ga.setTitle(e.getTitle());
-			ga.setSubTitle(e.getTitle());
+			ga.setTitle(StringEscapeUtils.escapeJava(e.getTitle()));
+			ga.setSubTitle(StringEscapeUtils.escapeJava(e.getTitle()));
 			
 			if(e.getImages() != null && e.getImages().size() > 0){
 				imageURL = e.getImages().get(0).toString();
