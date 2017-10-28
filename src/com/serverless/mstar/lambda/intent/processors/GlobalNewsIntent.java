@@ -98,7 +98,7 @@ public class GlobalNewsIntent extends IntentProcessor {
 				imageURL = e.getImages().get(0).toString();
 			}
 			else {
-				imageURL = "https://mercurymarine-gsdesign1.netdna-ssl.com/static/img/news/icon-news.svg";
+				imageURL = "https://techbuyersguru.com/sites/default/files/pictures/TBGgraphics/icon-news.png";
 			}
 			ga.setImageUrl(imageURL);
 			ga.setAttachmentLinkUrl(e.getUrl());
