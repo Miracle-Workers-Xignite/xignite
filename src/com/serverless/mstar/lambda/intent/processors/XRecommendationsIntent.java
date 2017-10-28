@@ -88,7 +88,7 @@ public class XRecommendationsIntent extends IntentProcessor{
 		
 		
 		
-		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Response from Lambda slot1 is "+lexEvent.getSessionAttributes().get("CompanyAttr")+"Recommendations are "+sb.toString()));
+		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText",lexEvent.getSessionAttributes().get("CompanyAttr")+"Recommendations are "+sb.toString()));
 		
 	     
 		

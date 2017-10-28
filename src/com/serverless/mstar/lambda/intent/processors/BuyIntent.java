@@ -1,6 +1,7 @@
 package com.serverless.mstar.lambda.intent.processors;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.amazonaws.services.lambda.runtime.events.LexEvent;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -25,10 +26,10 @@ public class BuyIntent extends IntentProcessor{
 		String stock=lexEvent.getSessionAttributes().getOrDefault("CompanyAttr","MSFT");
 		String name=lexEvent.getCurrentIntent().getSlots().get("name");
 		String quantity=lexEvent.getCurrentIntent().getSlots().get("quantity");
+		BuyOrder buyOrder = new BuyOrder(stock, name, quantity);
+		new XigniteService().saveToDynamo(buyOrder);
 		
-		new XigniteService().saveToDynamo(new BuyOrder(stock, name, quantity));
-		
-		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Order is palced"));
+		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Order Placed for stock name "+buyOrder.getStockname()+" quantity "+buyOrder.getQuantity()));
 		 
 		 return  new LexResponse(dialogAction, lexEvent.getSessionAttributes());
 		 
