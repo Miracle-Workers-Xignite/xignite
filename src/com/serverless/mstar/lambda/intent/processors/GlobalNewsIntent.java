@@ -1,6 +1,8 @@
 package com.serverless.mstar.lambda.intent.processors;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.services.lambda.runtime.events.LexEvent;
@@ -10,18 +12,22 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.mstar.domain.ExchangeResult;
 import com.serverless.mstar.domain.Exchanges;
+import com.serverless.mstar.domain.globalnews.GlobalNewsTodaysSecurityHeadlines;
+import com.serverless.mstar.domain.globalnews.GlobalNewsTopSecurityHeadlines;
+import com.serverless.mstar.domain.globalnews.Headline;
 import com.serverless.mstar.lambda.response.DelegateDialogAction;
 import com.serverless.mstar.lambda.response.DelegateResponse;
 import com.serverless.mstar.lambda.response.DialogAction;
-import com.serverless.mstar.lambda.response.DialogAction_old;
 import com.serverless.mstar.lambda.response.ESDialogAction;
 import com.serverless.mstar.lambda.response.ElicitSlotResponse;
+import com.serverless.mstar.lambda.response.GenericAttachment;
 import com.serverless.mstar.lambda.response.LexResponse;
 import com.serverless.mstar.lambda.response.Message;
+import com.serverless.mstar.lambda.response.ResponseCard;
 import com.serverless.mstar.rest.service.XigniteService;
 
 
-public class FlowerIntent extends IntentProcessor {
+public class GlobalNewsIntent extends IntentProcessor {
 
 	@Override
 	protected Object validate(LexEvent lexEvent) {
@@ -30,15 +36,15 @@ public class FlowerIntent extends IntentProcessor {
 				+ lexEvent.getCurrentIntent().getSlots());
 
 		Map<String, String> slots = lexEvent.getCurrentIntent().getSlots();
-		if (slots.get("FlowerType") != null
-				&& !(slots.get("FlowerType").equalsIgnoreCase("rose"))) {
+		if (slots.get("securityName") != null
+				&& !(slots.get("securityName").equalsIgnoreCase("JCP"))) {
 
 			System.out.println("from if returning ElicitSlot");
 			Message message = new Message("PlainText",
-					"please enter a valid FlowerType "
-							+ slots.get("FlowerType") + " is not a valid type ");
+					"please enter a valid security Name "
+							+ slots.get("securityName") + " is not a valid type ");
 			ESDialogAction esd = new ESDialogAction("ElicitSlot", lexEvent
-					.getCurrentIntent().getName(), message, "FlowerType", slots);
+					.getCurrentIntent().getName(), message, "securityName", slots);
 			return new ElicitSlotResponse(esd);
 
 		} else {
@@ -60,25 +66,52 @@ public class FlowerIntent extends IntentProcessor {
 		
 		Map<String,String> slots= ci.getSlots();
 		
+		String securityName = slots.get("securityName");
+		
 		
 		StringBuilder sb=new StringBuilder();
 		
-		String resp=new XigniteService().getExchangesAsStr();
+		String resp=new XigniteService().getGlobalNewsTopSecurityHeadlinesAsStr(securityName);
 		ObjectMapper mapper=new ObjectMapper();
 		
-		ExchangeResult er= mapper.readValue(resp,ExchangeResult.class);
+		GlobalNewsTopSecurityHeadlines er= mapper.readValue(resp,GlobalNewsTopSecurityHeadlines.class);
 		
 		
 		
 		System.out.println("Outcome is "+ resp );
 		
-		for(Exchanges e:er.getExchangeDescriptions()){
-			sb.append(e.getMarket()).append(" ");
+		ResponseCard respCard = new ResponseCard();
+		respCard.setVersion(1);
+		respCard.setContentType("application/vnd.amazonaws.card.generic");
+		
+		List<GenericAttachment> genAttach = new ArrayList<GenericAttachment>();
+		GenericAttachment ga = null;
+		String imageURL = null;
+		
+		for(Headline e:er.getHeadlines()){
+			sb.append(e.getTitle()).append(" ");
+			ga = new GenericAttachment();
+			ga.setTitle(e.getTitle());
+			ga.setSubTitle(e.getTitle());
+			
+			if(e.getImages() != null && e.getImages().size() > 0){
+				imageURL = e.getImages().get(0).toString();
+			}
+			else {
+				imageURL = "https://mercurymarine-gsdesign1.netdna-ssl.com/static/img/news/icon-news.svg";
+			}
+			ga.setImageUrl(imageURL);
+			ga.setAttachmentLinkUrl(e.getUrl());
+			ga.setButtons(null);
+			
+			genAttach.add(ga);
 		}
 		
-		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Response from Lambda slot1 is "+slots.get("FlowerType")+"Exchanes are "+sb.toString()));
+		respCard.setGenericAttachments(genAttach);
 		
-	     
+		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Top Headlines for "+securityName+" are : "+sb.toString()));
+		
+		dialogAction.setResponseCard(respCard);
 		
 		return  new LexResponse(dialogAction, lexEvent.getSessionAttributes());
 

@@ -9,7 +9,6 @@ import com.serverless.mstar.domain.BaseAPIDomainObject;
 import com.serverless.mstar.domain.ExchangeResult;
 import com.serverless.mstar.domain.XCompanyRecommendations;
 import com.serverless.mstar.domain.globalnews.GlobalNewsListSectors;
-import com.serverless.mstar.domain.globalnews.GlobalNewsTodaysMarketHeadlines;
 
 public class XigniteService {
 
@@ -56,7 +55,28 @@ public class XigniteService {
 				"https://factsetestimates.xignite.com/xFactSetEstimates.json/GetLatestRecommendationSummaries?IdentifierType=Symbol&Identifiers=MSFT,GOOG&UpdatedSince=&_token=AE4A02E0271A4E77B78B314AEE9A132D",
 				String.class);
 	}
+	
+	// GlobalNewsTodaysSecurityHeadlinesAsStr
+	public String getGlobalNewsTodaysSecurityHeadlinesAsStr(String securityName) {
+		return this.restTemplate.getForObject(
+				"https://globalnews.xignite.com/xGlobalNews.json/GetTodaysSecurityHeadlines?IdentifierType=Symbol&Identifier="+securityName+"&_token=AE4A02E0271A4E77B78B314AEE9A132D",
+				String.class);
+	}
 
+	// GlobalNewsTopSecurityHeadlinesAsStr
+	public String getGlobalNewsTopSecurityHeadlinesAsStr(String securityName) {
+		return this.restTemplate.getForObject(
+				"https://globalnews.xignite.com/xGlobalNews.json/GetTopSecurityHeadlines?IdentifierType=Symbol&Identifier="+securityName+"&Count=3&_token=AE4A02E0271A4E77B78B314AEE9A132D",
+				String.class);
+	}
+	
+	public String getTopMoversAsStr(String exchangename) {
+		return this.restTemplate.getForObject(
+				"https://globalquotes.xignite.com/v3/xGlobalQuotes.json/GetTopMarketMovers?MarketMoverType=PercentGainers&NumberOfMarketMovers=3&Exchanges="+exchangename+"&_token=AE4A02E0271A4E77B78B314AEE9A132D",
+				String.class);
+	}
+		
+		
 	public static void main(String s[]) {
 		XigniteService svc = new XigniteService();
 		String str = svc.getRecommendationsAsStr();

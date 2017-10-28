@@ -14,6 +14,7 @@ public class IntentMap {
 		
 		procesorMap.put("OrderFlowers",new FlowerIntent());
 		procesorMap.put("MarketPerformance",new ExchangeIntent());
+		procesorMap.put("GlobalNewsIntent",new GlobalNewsIntent());
 	    
 	}
 	
