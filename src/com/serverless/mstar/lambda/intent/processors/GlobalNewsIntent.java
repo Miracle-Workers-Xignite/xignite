@@ -136,8 +136,8 @@ public class GlobalNewsIntent extends IntentProcessor {
 		for(Headline e:er.getHeadlines()){
 			sb.append(e.getTitle()).append(" ");
 			ga = new GenericAttachment();
-			ga.setTitle(StringEscapeUtils.escapeJava(e.getTitle()));
-			ga.setSubTitle(StringEscapeUtils.escapeJava(e.getTitle()));
+			ga.setTitle(StringEscapeUtils.escapeJava(e.getTitle()).replace(":", "\\:"));
+			ga.setSubTitle(StringEscapeUtils.escapeJava(e.getTitle()).replace(":", "\\:"));
 			
 			if(e.getImages() != null && e.getImages().size() > 0){
 				imageURL = e.getImages().get(0).toString();
