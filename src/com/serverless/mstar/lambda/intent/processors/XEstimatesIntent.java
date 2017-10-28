@@ -1,6 +1,7 @@
 package com.serverless.mstar.lambda.intent.processors;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.amazonaws.services.lambda.runtime.events.LexEvent;
@@ -99,9 +100,10 @@ public class XEstimatesIntent extends IntentProcessor{
 		
 		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Response from Lambda slot1 is "+slots.get("Company")+"\nEstimates are "+sb.toString()));
 		
-	     
+		Map<String,String> sAttributes=new HashMap<>();
+		sAttributes.put("CompanyAttr",slots.get("Company"));
 		
-		return  new LexResponse(dialogAction, lexEvent.getSessionAttributes());
+		return  new LexResponse(dialogAction, sAttributes);
 
 	}
 

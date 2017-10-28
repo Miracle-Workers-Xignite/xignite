@@ -17,7 +17,7 @@ public class IntentMap {
 		procesorMap.put("GlobalNewsIntent",new GlobalNewsIntent());
 		procesorMap.put("XEstimatesIntent",new XEstimatesIntent());
 		procesorMap.put("XRecommendationIntent",new XRecommendationsIntent());
-		procesorMap.put("GlobalNewsMarketIntent",new XRecommendationsIntent());
+		procesorMap.put("GlobalNewsMarketIntent",new GlobalNewsMarketIntent());
 	    
 	}
 	
