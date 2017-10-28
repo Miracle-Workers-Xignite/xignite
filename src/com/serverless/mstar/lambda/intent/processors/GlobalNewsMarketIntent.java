@@ -13,8 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.mstar.domain.ExchangeResult;
 import com.serverless.mstar.domain.Exchanges;
 import com.serverless.mstar.domain.globalnews.GlobalNewsTodaysSecurityHeadlines;
+import com.serverless.mstar.domain.globalnews.GlobalNewsTopMarketHeadlines;
 import com.serverless.mstar.domain.globalnews.GlobalNewsTopSecurityHeadlines;
 import com.serverless.mstar.domain.globalnews.Headline;
+import com.serverless.mstar.domain.globalnews.Headlines;
 import com.serverless.mstar.lambda.response.DelegateDialogAction;
 import com.serverless.mstar.lambda.response.DelegateResponse;
 import com.serverless.mstar.lambda.response.DialogAction;
@@ -27,7 +29,7 @@ import com.serverless.mstar.lambda.response.ResponseCard;
 import com.serverless.mstar.rest.service.XigniteService;
 
 
-public class GlobalNewsIntent extends IntentProcessor {
+public class GlobalNewsMarketIntent extends IntentProcessor {
 
 	@Override
 	protected Object validate(LexEvent lexEvent) {
@@ -66,15 +68,15 @@ public class GlobalNewsIntent extends IntentProcessor {
 		
 		Map<String,String> slots= ci.getSlots();
 		
-		String securityName = slots.get("securityName");
+		//String securityName = slots.get("securityName");
 		
 		
 		StringBuilder sb=new StringBuilder();
 		
-		String resp=new XigniteService().getGlobalNewsTopSecurityHeadlinesAsStr(securityName);
+		String resp=new XigniteService().getGlobalNewsTopMarketHeadlinesAsStr();
 		ObjectMapper mapper=new ObjectMapper();
 		
-		GlobalNewsTopSecurityHeadlines er= mapper.readValue(resp,GlobalNewsTopSecurityHeadlines.class);
+		GlobalNewsTopMarketHeadlines er= mapper.readValue(resp,GlobalNewsTopMarketHeadlines.class);
 		
 		
 		
@@ -88,7 +90,7 @@ public class GlobalNewsIntent extends IntentProcessor {
 		GenericAttachment ga = null;
 		String imageURL = null;
 		
-		for(Headline e:er.getHeadlines()){
+		for(Headlines e:er.getHeadlines()){
 			sb.append(e.getTitle()).append(" ");
 			ga = new GenericAttachment();
 			ga.setTitle(e.getTitle());
@@ -109,7 +111,7 @@ public class GlobalNewsIntent extends IntentProcessor {
 		
 		respCard.setGenericAttachments(genAttach);
 		
-		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Top Headlines for security - "+securityName+" are: "+sb.toString()));
+		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Top Market Headlines are: "+sb.toString()));
 		
 		dialogAction.setResponseCard(respCard);
 		

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+	"Securities",
     "Title",
     "Date",
     "Time",
@@ -22,9 +23,21 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "Images",
     "Tags"
 })
-public class Headline {
+public class Headlines {
 
-    @JsonProperty("Title")
+	@JsonProperty("Securities")
+	private List<Securities> securities = null;
+    
+	public List<Securities> getSecurities() {
+		return securities;
+	}
+
+	public void setSecurities(List<Securities> securities) {
+		this.securities = securities;
+	}
+
+
+	@JsonProperty("Title")
     private String title;
     @JsonProperty("Date")
     private String date;
