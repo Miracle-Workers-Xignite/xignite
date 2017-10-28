@@ -44,17 +44,7 @@ public class XigniteService {
 
 	}
 
-	public String getEstimatesAsStr() {
-		return this.restTemplate.getForObject(
-				"https://factsetestimates.xignite.com/xFactSetEstimates.json/GetEstimates?IdentifierType=Symbol&Identifiers=MSFT,GOOG&EstimateTypes=EPS,Sales&ReportType=Annual&EstimateFiscalPeriod=2018FY&AsOfDate=10/25/2017&UpdatedSince=&_token=AE4A02E0271A4E77B78B314AEE9A132D",
-				String.class);
-	}
-
-	public String getRecommendationsAsStr() {
-		return this.restTemplate.getForObject(
-				"https://factsetestimates.xignite.com/xFactSetEstimates.json/GetLatestRecommendationSummaries?IdentifierType=Symbol&Identifiers=MSFT,GOOG&UpdatedSince=&_token=AE4A02E0271A4E77B78B314AEE9A132D",
-				String.class);
-	}
+	
 	
 	// GlobalNewsTodaysSecurityHeadlinesAsStr
 	public String getGlobalNewsTodaysSecurityHeadlinesAsStr(String securityName) {
@@ -75,11 +65,23 @@ public class XigniteService {
 				"https://globalquotes.xignite.com/v3/xGlobalQuotes.json/GetTopMarketMovers?MarketMoverType=PercentGainers&NumberOfMarketMovers=3&Exchanges="+exchangename+"&_token=AE4A02E0271A4E77B78B314AEE9A132D",
 				String.class);
 	}
+	
+	public String getEstimatesAsStr(String companyList) {
+		return this.restTemplate.getForObject(
+				"https://factsetestimates.xignite.com/xFactSetEstimates.json/GetLatestEstimates?IdentifierType=Symbol&Identifiers="+companyList+"&EstimateTypes=EPS,Sales&ReportType=Annual&UpdatedSince=&_token=AE4A02E0271A4E77B78B314AEE9A132D",
+				String.class);
+	}
+
+	public String getRecommendationsAsStr(String companyList) {
+		return this.restTemplate.getForObject(
+				"https://factsetestimates.xignite.com/xFactSetEstimates.json/GetLatestRecommendationSummaries?IdentifierType=Symbol&Identifiers="+companyList+"&UpdatedSince=&_token=AE4A02E0271A4E77B78B314AEE9A132D",
+				String.class);
+	}
 		
 		
 	public static void main(String s[]) {
 		XigniteService svc = new XigniteService();
-		String str = svc.getRecommendationsAsStr();
+		String str = "";
 		System.out.println("str is = \n" + str);
 		ObjectMapper mapper = new ObjectMapper();
 		// List<XCompanyEstimates> resList =
