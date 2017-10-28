@@ -8,10 +8,7 @@ import com.amazonaws.services.lambda.runtime.events.LexEvent.CurrentIntent;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serverless.mstar.domain.XCompanyEstimates;
 import com.serverless.mstar.domain.XCompanyRecommendations;
-import com.serverless.mstar.domain.XEstimate;
-import com.serverless.mstar.domain.XEstimatesSet;
 import com.serverless.mstar.domain.XRecommendationSummarySet;
 import com.serverless.mstar.lambda.response.DelegateDialogAction;
 import com.serverless.mstar.lambda.response.DelegateResponse;
@@ -64,7 +61,7 @@ public class XRecommendationsIntent extends IntentProcessor{
 		StringBuilder sb=new StringBuilder();
 		
 		
-		String resp=new XigniteService().getRecommendationsAsStr(slots.get("Company"));
+		String resp=new XigniteService().getRecommendationsAsStr(lexEvent.getSessionAttributes().get("CompanyAttr"));
 		ObjectMapper mapper=new ObjectMapper();
 		
 		XCompanyRecommendations[] myObjects = null;
@@ -91,7 +88,7 @@ public class XRecommendationsIntent extends IntentProcessor{
 		
 		
 		
-		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Response from Lambda slot1 is "+slots.get("Company")+"Recommendations are "+sb.toString()));
+		DialogAction dialogAction = new DialogAction("Close", "Fulfilled", new Message("PlainText","Response from Lambda slot1 is "+lexEvent.getSessionAttributes().get("CompanyAttr")+"Recommendations are "+sb.toString()));
 		
 	     
 		
