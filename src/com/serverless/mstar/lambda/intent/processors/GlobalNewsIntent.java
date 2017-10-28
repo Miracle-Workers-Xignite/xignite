@@ -133,11 +133,17 @@ public class GlobalNewsIntent extends IntentProcessor {
 		GenericAttachment ga = null;
 		String imageURL = null;
 		
+		String title = null;
+		
 		for(Headline e:er.getHeadlines()){
-			sb.append(e.getTitle()).append(" ");
+			
+			title = e.getTitle();
+			
+			sb.append(title).append(" ");
+			
 			ga = new GenericAttachment();
-			ga.setTitle(StringEscapeUtils.escapeJava(e.getTitle()).replace(":", "\\:").replace(";", "\\;"));
-			ga.setSubTitle(StringEscapeUtils.escapeJava(e.getTitle()).replace(":", "\\:").replace(";", "\\;"));
+			ga.setTitle(title.substring(0, title.length() > 75 ? 75:title.length()));
+			ga.setSubTitle(title.substring(0, title.length() > 75 ? 75:title.length()));
 			
 			if(e.getImages() != null && e.getImages().size() > 0){
 				imageURL = e.getImages().get(0).toString();

@@ -89,12 +89,22 @@ public class GlobalNewsMarketIntent extends IntentProcessor {
 		List<GenericAttachment> genAttach = new ArrayList<GenericAttachment>();
 		GenericAttachment ga = null;
 		String imageURL = null;
+		String title = null;
 		
 		for(Headlines e:er.getHeadlines()){
-			sb.append(e.getTitle()).append(" ");
+			
+			title = e.getTitle();
+			
+			sb.append(title).append(" ");
+			
+			ga = new GenericAttachment();
+			ga.setTitle(title.substring(0, title.length() > 75 ? 75:title.length()));
+			ga.setSubTitle(title.substring(0, title.length() > 75 ? 75:title.length()));
+			
+			/*sb.append(e.getTitle()).append(" ");
 			ga = new GenericAttachment();
 			ga.setTitle(e.getTitle());
-			ga.setSubTitle(e.getTitle());
+			ga.setSubTitle(e.getTitle());*/
 			
 			if(e.getImages() != null && e.getImages().size() > 0){
 				imageURL = e.getImages().get(0).toString();
