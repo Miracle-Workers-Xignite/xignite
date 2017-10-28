@@ -119,9 +119,15 @@ public class XigniteService {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
 			HttpEntity<String> entity = new HttpEntity<String>(order,headers);
-
+			
+			
+			
+			
+			
 			String ans=this.restTemplate.postForObject("https://fpdv1komk2.execute-api.us-east-1.amazonaws.com/prod/portfolio", entity,String.class);
 			System.out.println("Answer is "+ans);
+			
+			new SNSService().publish(buyOrder);
 			
 			//System.out.println("ststus is "+entity.getStatusCode());
 		} catch (JsonProcessingException e) {
