@@ -12,9 +12,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.mstar.domain.ExchangeResult;
 import com.serverless.mstar.domain.Exchanges;
+import com.serverless.mstar.domain.XCompanyEstimates;
+import com.serverless.mstar.domain.XEstimate;
+import com.serverless.mstar.domain.XEstimatesSet;
 import com.serverless.mstar.domain.globalnews.GlobalNewsTodaysSecurityHeadlines;
 import com.serverless.mstar.domain.globalnews.GlobalNewsTopSecurityHeadlines;
 import com.serverless.mstar.domain.globalnews.Headline;
+import com.serverless.mstar.domain.globalnews.SecuritiesResult;
 import com.serverless.mstar.lambda.response.DelegateDialogAction;
 import com.serverless.mstar.lambda.response.DelegateResponse;
 import com.serverless.mstar.lambda.response.DialogAction;
@@ -34,10 +38,14 @@ public class GlobalNewsIntent extends IntentProcessor {
 		
 		System.out.println("from validate "
 				+ lexEvent.getCurrentIntent().getSlots());
-
+		
 		Map<String, String> slots = lexEvent.getCurrentIntent().getSlots();
+		String securityName=slots.get("securityName");
+		System.out.println("security Name is "+securityName);
+		
+		
 		if (slots.get("securityName") != null
-				&& !(slots.get("securityName").equalsIgnoreCase("JCP"))) {
+				&& !isValidSecurity(securityName)) {
 
 			System.out.println("from if returning ElicitSlot");
 			Message message = new Message("PlainText",
@@ -55,6 +63,41 @@ public class GlobalNewsIntent extends IntentProcessor {
 					slots));
 		}
 
+	}
+
+	private boolean isValidSecurity(String securityName) {
+		// TODO Auto-generated method stub
+		
+		boolean isValid = false;
+		
+		try {
+			SecuritiesResult[] myObjects =new ObjectMapper().readValue(new XigniteService().getGetSecuritiesAsStr(securityName),SecuritiesResult[].class);
+			
+			if(myObjects!=null && myObjects.length>0) {
+				for(SecuritiesResult ce:myObjects){
+					if(ce.getOutcome() != null && ce.getOutcome().toString().equalsIgnoreCase("Success")){
+						isValid = true;
+						break;
+					}
+					
+				}
+				
+				System.out.println(myObjects[0].getOutcome().toString());
+			}
+			
+			
+			
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return isValid;
 	}
 
 	@Override

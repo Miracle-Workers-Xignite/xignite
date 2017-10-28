@@ -1,16 +1,24 @@
 package com.serverless.mstar.rest.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.mstar.domain.BaseAPIDomainObject;
+import com.serverless.mstar.domain.BuyOrder;
 import com.serverless.mstar.domain.ExchangeResult;
 import com.serverless.mstar.domain.XCompanyRecommendations;
 import com.serverless.mstar.domain.globalnews.GlobalNewsListSectors;
-
+import com.serverless.mstar.domain.globalnews.SecuritiesResult;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
@@ -91,8 +99,36 @@ public class XigniteService {
 	
 	public String getGlobalNewsTopMarketHeadlinesAsStr() {
 		return this.restTemplate.getForObject(
-				"https://globalnews.xignite.com/xGlobalNews.json/GetTopMarketHeadlines?Count=1&_token="+_token,
+				"https://globalnews.xignite.com/xGlobalNews.json/GetTopMarketHeadlines?Count=3&_token="+_token,
 				String.class);
+	}
+	
+	public String getGetSecuritiesAsStr(String securityName) {
+		return this.restTemplate.getForObject(
+				"https://globalmaster.xignite.com/xglobalmaster.json/GetSecurities?IdentifierType=Symbol&Identifiers="+securityName+"&AsOfDate=10/27/2017&_token="+_token,
+				String.class);
+		
+	}
+	
+	public void saveToDynamo(BuyOrder buyOrder){
+		try {
+			
+			String order=new ObjectMapper().writeValueAsString(buyOrder);
+			System.out.println("order JSON is "+order);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			HttpEntity<String> entity = new HttpEntity<String>(order,headers);
+
+			String ans=this.restTemplate.postForObject("https://fpdv1komk2.execute-api.us-east-1.amazonaws.com/prod/portfolio", entity,String.class);
+			System.out.println("Answer is "+ans);
+			
+			//System.out.println("ststus is "+entity.getStatusCode());
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 		
@@ -103,15 +139,34 @@ public class XigniteService {
 		ObjectMapper mapper = new ObjectMapper();
 		// List<XCompanyEstimates> resList =
 		// mapper.readValue(str,List<XCompanyEstimates>.class>);
-		XCompanyRecommendations[] myObjects = null;
+		
+		String sName = "TROW";
+		SecuritiesResult[] myObjects = null;
+		//List<SecuritiesResult> er = null;
 		try {
-			myObjects = mapper.readValue(str, XCompanyRecommendations[].class);
+			//List<SecuritiesResult> er=new ObjectMapper().readValue(new XigniteService().getGetSecuritiesAsStr("TROW"),List.class);
+			myObjects = new ObjectMapper().readValue(new XigniteService().getGetSecuritiesAsStr(sName),SecuritiesResult[].class);
+			
+				
+				if(myObjects!=null && myObjects.length>0) {
+					for(SecuritiesResult ce:myObjects){
+						if(ce.getOutcome() != null && ce.getOutcome().toString().equalsIgnoreCase("Success")){
+							System.out.println("valid security: "+sName);
+							break;
+						}
+						
+					}
+				}
+				
+				System.out.println(myObjects[0].getOutcome().toString());
+				
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (myObjects != null) {
-			System.out.println(myObjects.toString());
+			System.out.println(myObjects.length);
 		}
 		// List<XCompanyEstimates> myObjects = mapper.readValue(str, new
 		// TypeReference<List<XCompanyEstimates>>(){});

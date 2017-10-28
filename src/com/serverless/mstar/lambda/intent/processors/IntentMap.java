@@ -12,12 +12,12 @@ public class IntentMap {
 	
 	static{
 		
-		procesorMap.put("OrderFlowers",new FlowerIntent());
 		procesorMap.put("MarketPerformance",new ExchangeIntent());
 		procesorMap.put("GlobalNewsIntent",new GlobalNewsIntent());
 		procesorMap.put("XEstimatesIntent",new XEstimatesIntent());
 		procesorMap.put("XRecommendationIntent",new XRecommendationsIntent());
 		procesorMap.put("GlobalNewsMarketIntent",new GlobalNewsMarketIntent());
+		procesorMap.put("BuyIntent", new BuyIntent());
 	    
 	}
 	
